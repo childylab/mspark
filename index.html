@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>상품 검증 시스템</title>
+<title>상품 검증</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -17,109 +17,47 @@ body {
   justify-content: center;
   padding: 40px 20px;
 }
-.header {
-  text-align: center;
-  margin-bottom: 48px;
-}
-.header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #e0e0e0;
-  margin-bottom: 8px;
-}
-.header p {
-  font-size: 14px;
-  color: #888;
-}
+h1 { font-size: 22px; margin-bottom: 32px; color: #ccc; font-weight: 500; }
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  max-width: 900px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  max-width: 760px;
   width: 100%;
 }
 .card {
   background: #1a1a2e;
   border: 1px solid #2a2a4a;
-  border-radius: 12px;
-  padding: 28px 24px;
+  border-radius: 10px;
+  padding: 24px 20px;
   text-decoration: none;
   color: #fff;
   transition: all .2s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 .card:hover {
-  background: #16213e;
   border-color: #4fc3f7;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(79,195,247,.15);
+  box-shadow: 0 6px 20px rgba(79,195,247,.12);
 }
-.card .badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  width: fit-content;
-}
-.card .badge.season { background: #1b5e20; color: #a5d6a7; }
-.card .badge.brand { background: #4a148c; color: #ce93d8; }
-.card h2 {
-  font-size: 18px;
-  font-weight: 700;
-}
-.card p {
-  font-size: 13px;
-  color: #999;
-  line-height: 1.5;
-}
-.card .meta {
-  font-size: 11px;
-  color: #666;
-  margin-top: auto;
-  padding-top: 8px;
-  border-top: 1px solid #2a2a4a;
-}
-footer {
-  margin-top: 60px;
-  font-size: 12px;
-  color: #555;
-}
+.card h2 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.card p { font-size: 12px; color: #888; }
 </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>상품 검증 시스템</h1>
-  <p>상품상세 · 썸네일 이미지 검증 도구 모음</p>
-</div>
-
+<h1>상품 검증</h1>
 <div class="grid">
   <a href="odp_batch_detail_test.html" class="card">
-    <span class="badge season">26 F/W</span>
-    <h2>ODP 26FA 전체 검증</h2>
-    <p>아웃도어프로덕츠 2026 F/W 시즌 73개 상품<br>상품상세 + 썸네일(ERP/750/800/960/1000/1500) 검증</p>
-    <div class="meta">73개 상품 · 상품상세 / 썸네일 탭</div>
+    <h2>ODP 26FA</h2>
+    <p>73개</p>
   </a>
-
   <a href="univ_batch_detail_test.html" class="card">
-    <span class="badge brand">26 F/W</span>
-    <h2>UNIV 26FA 전체 검증</h2>
-    <p>유니버셜오버올 2026 F/W 시즌 16개 상품<br>상품상세 + 썸네일(ERP/750/800/1000/1500) 검증</p>
-    <div class="meta">16개 상품 · 상품상세 / 썸네일 탭</div>
+    <h2>UNIV 26FA</h2>
+    <p>16개</p>
   </a>
-
   <a href="uo_batch_detail_test.html" class="card">
-    <span class="badge brand">26 F/W</span>
-    <h2>UO 26FA 전체 검증</h2>
-    <p>유니버셜오버롤 2026 F/W 시즌<br>상품상세 + 썸네일 검증</p>
-    <div class="meta">1개 상품 · 상품상세 / 썸네일 탭</div>
+    <h2>UO 26FA</h2>
+    <p>6개</p>
   </a>
 </div>
-
-<footer>msparkman.netlify.app</footer>
-
 </body>
 </html>
