@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UO 26FA 전체 검증 (1개)</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+#topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #1a1a2e; color: #fff; padding: 10px 20px; display: flex; align-items: center; gap: 20px; font-size: 13px; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+#topbar .brand { font-weight: 700; font-size: 14px; white-space: nowrap; }
+#topbar .stats { display: flex; gap: 14px; }
+#topbar .stat { padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+#topbar .stat.total { background: #334; }
+#topbar .stat.ok { background: #1b5e20; }
+#topbar .stat.fail { background: #b71c1c; }
+#topbar a.home { color: #4fc3f7; text-decoration: none; font-size: 12px; margin-left: auto; }
+#tabs { position: fixed; top: 44px; left: 0; right: 0; z-index: 998; background: #0f3460; display: flex; padding: 0; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+#tabs button { flex: 1; padding: 10px 20px; border: none; background: transparent; color: #8ab4f8; font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; transition: all .2s; }
+#tabs button:hover { background: rgba(255,255,255,.05); }
+#tabs button.active { color: #fff; border-bottom-color: #4fc3f7; background: rgba(255,255,255,.08); }
+#failPanel { display: none; position: fixed; top: 84px; left: 0; right: 0; z-index: 997; background: #fff3f3; border-bottom: 2px solid #e53935; padding: 8px 20px; max-height: 180px; overflow-y: auto; font-size: 12px; }
+#failPanel.show { display: block; }
+#failPanel h4 { color: #c62828; margin-bottom: 4px; }
+#failPanel .fail-item { color: #555; padding: 2px 0; word-break: break-all; }
+#main { padding: 100px 20px 40px; max-width: 1060px; margin: 0 auto; }
+.card { background: #fff; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
+.card-header { padding: 10px 16px; background: #263238; color: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; user-select: none; }
+.card-header:hover { background: #37474f; }
+.card-header .pum { font-weight: 700; color: #80cbc4; }
+.card-header .color { color: #ffcc80; margin-left: 8px; }
+.card-header .name { color: #cfd8dc; margin-left: 8px; }
+.card-header .toggle { font-size: 16px; transition: transform .2s; }
+.card-header.collapsed .toggle { transform: rotate(-90deg); }
+.card-body { padding: 10px; text-align: center; }
+.card-body.hidden { display: none; }
+.card-body img { display: block; width: 100%; max-width: 860px; margin: 0 auto; border: 3px solid #e0e0e0; transition: border-color .3s; }
+.card-body img.loaded { border-color: #4caf50; }
+.card-body img.error { border-color: #f44336; }
+.thumb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; padding: 10px; }
+.thumb-item { text-align: center; }
+.thumb-item img { width: 100%; max-width: 200px; border: 3px solid #e0e0e0; border-radius: 4px; }
+.thumb-item img.loaded { border-color: #4caf50; }
+.thumb-item img.error { border-color: #f44336; }
+.thumb-item .label { font-size: 11px; color: #666; margin-top: 4px; word-break: break-all; }
+.thumb-size-label { font-weight: 700; font-size: 12px; color: #1a1a2e; padding: 8px 0 4px; border-bottom: 1px solid #ddd; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div class="brand">UO 26FA 전체 검증 (유니버셜오버롤)</div>
+  <div class="stats">
+    <span class="stat total">전체: <span id="cntTotal">0</span></span>
+    <span class="stat ok">성공: <span id="cntOk">0</span></span>
+    <span class="stat fail">실패: <span id="cntFail">0</span></span>
+  </div>
+  <a class="home" href="index.html">← 메인</a>
+</div>
+<div id="tabs">
+  <button class="active" data-tab="detail">상품상세 검증</button>
+  <button data-tab="thumb">썸네일 검증</button>
+</div>
+<div id="failPanel"><h4>❌ 실패 URL 목록</h4><div id="failList"></div></div>
+<div id="main"></div>
+
+<script>
+const BASE = 'https://img.childy.kr/img/UNIVERSALOVERALL/UO26_FA/';
+const THUMB_BASE = 'https://img.childy.kr/img/UNIVERSALOVERALL/UO26_FA/thum/';
+
+// 품번, 컬러코드(ALL), 상품명, 컬러목록(모델컷 순서)
+const PRODUCTS = [
+  {
+    pum: 'UO263ISS01',
+    color: 'ALL',
+    name: '유니버셜 오버롤 기획 반팔티셔츠',
+    colors: ['BLK','WHT','NVY','GRY','BRN'],
+    mainColor: 'BLK'
+  }
+];
+
+const THUMB_SIZES = ['ERP','750','800','1000','1500','ERP_ALL'];
+
+let totalImgs = 0, okImgs = 0, failImgs = 0;
+
+function updateStats() {
+  document.getElementById('cntTotal').textContent = totalImgs;
+  document.getElementById('cntOk').textContent = okImgs;
+  document.getElementById('cntFail').textContent = failImgs;
+}
+function addFail(url) {
+  document.getElementById('failPanel').classList.add('show');
+  const div = document.createElement('div');
+  div.className = 'fail-item';
+  div.textContent = url;
+  document.getElementById('failList').appendChild(div);
+}
+function resetStats() {
+  totalImgs = 0; okImgs = 0; failImgs = 0;
+  updateStats();
+  document.getElementById('failList').innerHTML = '';
+  document.getElementById('failPanel').classList.remove('show');
+}
+
+function getDetailImages(product) {
+  const p = product.pum;
+  const imgs = [];
+  imgs.push(BASE + p + '_ALL_top.jpg');
+  imgs.push(BASE + p + '_ALL_txt.jpg');
+  imgs.push(BASE + p + '_' + product.mainColor + '_top.jpg');
+  product.colors.forEach(c => {
+    imgs.push(BASE + p + '_' + c + '_model.jpg');
+  });
+  imgs.push(BASE + p + '_' + product.mainColor + '_detail.jpg');
+  imgs.push(BASE + p + '_size.jpg');
+  imgs.push(BASE + p + '_washingtip.jpg');
+  return imgs;
+}
+
+function getThumbUrls(product) {
+  const key = product.pum + '_ALL';
+  return {
+    'ERP': THUMB_BASE + key + '.jpg',
+    '750': THUMB_BASE + key + '_750.jpg',
+    '800': THUMB_BASE + key + '_800.jpg',
+    '1000': THUMB_BASE + key + '_1000.jpg',
+    '1500': THUMB_BASE + key + '_1500.jpg',
+    'ERP_ALL': THUMB_BASE + key + '.jpg'
+  };
+}
+
+function createImg(src) {
+  totalImgs++;
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = src.split('/').pop();
+  img.onload = function() { this.classList.add('loaded'); okImgs++; updateStats(); };
+  img.onerror = function() { this.classList.add('error'); failImgs++; updateStats(); addFail(src); };
+  return img;
+}
+
+function buildDetailTab() {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+  resetStats();
+  PRODUCTS.forEach((product, idx) => {
+    const card = document.createElement('div'); card.className = 'card';
+    const header = document.createElement('div'); header.className = 'card-header';
+    header.innerHTML = `<div><span class="pum">${product.pum}</span><span class="color">${product.color}</span><span class="name">${product.name}</span></div><span class="toggle">▼</span>`;
+    const body = document.createElement('div'); body.className = 'card-body';
+    getDetailImages(product).forEach(src => body.appendChild(createImg(src)));
+    header.addEventListener('click', () => { body.classList.toggle('hidden'); header.classList.toggle('collapsed'); });
+    card.appendChild(header); card.appendChild(body); main.appendChild(card);
+  });
+  updateStats();
+}
+
+function buildThumbTab() {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+  resetStats();
+  PRODUCTS.forEach((product, idx) => {
+    const card = document.createElement('div'); card.className = 'card';
+    const header = document.createElement('div'); header.className = 'card-header';
+    header.innerHTML = `<div><span class="pum">${product.pum}</span><span class="color">${product.color}</span><span class="name">${product.name}</span></div><span class="toggle">▼</span>`;
+    const body = document.createElement('div'); body.className = 'card-body';
+    const thumbs = getThumbUrls(product);
+    const grid = document.createElement('div'); grid.className = 'thumb-grid';
+    THUMB_SIZES.forEach(size => {
+      const item = document.createElement('div'); item.className = 'thumb-item';
+      const sl = document.createElement('div'); sl.className = 'thumb-size-label'; sl.textContent = size; item.appendChild(sl);
+      item.appendChild(createImg(thumbs[size]));
+      const lb = document.createElement('div'); lb.className = 'label'; lb.textContent = thumbs[size].split('/').pop(); item.appendChild(lb);
+      grid.appendChild(item);
+    });
+    body.appendChild(grid);
+    header.addEventListener('click', () => { body.classList.toggle('hidden'); header.classList.toggle('collapsed'); });
+    card.appendChild(header); card.appendChild(body); main.appendChild(card);
+  });
+  updateStats();
+}
+
+document.querySelectorAll('#tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b === btn));
+    if (btn.dataset.tab === 'detail') buildDetailTab(); else buildThumbTab();
+  });
+});
+buildDetailTab();
+</script>
+</body>
+</html>
