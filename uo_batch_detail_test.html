@@ -78,7 +78,7 @@ const PRODUCTS = [
   }
 ];
 
-const THUMB_SIZES = ['ERP','750','800','1000','1500','ERP_ALL'];
+const THUMB_SIZES = ['960','1000','1500'];
 
 let totalImgs = 0, okImgs = 0, failImgs = 0;
 
@@ -106,6 +106,7 @@ function getDetailImages(product) {
   const imgs = [];
   imgs.push(BASE + p + '_ALL_top.jpg');
   imgs.push(BASE + p + '_ALL_txt.jpg');
+  imgs.push(BASE + p + '_ALL_event.jpg');
   imgs.push(BASE + p + '_' + product.mainColor + '_top.jpg');
   product.colors.forEach(c => {
     imgs.push(BASE + p + '_' + c + '_model.jpg');
@@ -117,15 +118,16 @@ function getDetailImages(product) {
 }
 
 function getThumbUrls(product) {
-  const key = product.pum + '_ALL';
-  return {
-    'ERP': THUMB_BASE + key + '.jpg',
-    '750': THUMB_BASE + key + '_750.jpg',
-    '800': THUMB_BASE + key + '_800.jpg',
-    '1000': THUMB_BASE + key + '_1000.jpg',
-    '1500': THUMB_BASE + key + '_1500.jpg',
-    'ERP_ALL': THUMB_BASE + key + '.jpg'
-  };
+  const p = product.pum;
+  const allColors = ['ALL'].concat(product.colors);
+  const urls = {};
+  allColors.forEach(c => {
+    const key = p + '_' + c;
+    urls[c + '_960'] = THUMB_BASE + key + '_960.jpg';
+    urls[c + '_1000'] = THUMB_BASE + key + '_1000.jpg';
+    urls[c + '_1500'] = THUMB_BASE + key + '_1500.jpg';
+  });
+  return urls;
 }
 
 function createImg(src) {
@@ -165,11 +167,11 @@ function buildThumbTab() {
     const body = document.createElement('div'); body.className = 'card-body';
     const thumbs = getThumbUrls(product);
     const grid = document.createElement('div'); grid.className = 'thumb-grid';
-    THUMB_SIZES.forEach(size => {
+    Object.keys(thumbs).forEach(label => {
       const item = document.createElement('div'); item.className = 'thumb-item';
-      const sl = document.createElement('div'); sl.className = 'thumb-size-label'; sl.textContent = size; item.appendChild(sl);
-      item.appendChild(createImg(thumbs[size]));
-      const lb = document.createElement('div'); lb.className = 'label'; lb.textContent = thumbs[size].split('/').pop(); item.appendChild(lb);
+      const sl = document.createElement('div'); sl.className = 'thumb-size-label'; sl.textContent = label; item.appendChild(sl);
+      item.appendChild(createImg(thumbs[label]));
+      const lb = document.createElement('div'); lb.className = 'label'; lb.textContent = thumbs[label].split('/').pop(); item.appendChild(lb);
       grid.appendChild(item);
     });
     body.appendChild(grid);
