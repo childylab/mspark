@@ -283,7 +283,6 @@ function createImg(src) {
   const img = document.createElement('img');
   img.src = src;
   img.alt = src.split('/').pop();
-  img.loading = 'lazy';
   img.onload = function() { this.classList.add('loaded'); okImgs++; updateStats(); };
   img.onerror = function() { this.classList.add('error'); failImgs++; updateStats(); addFail(src); };
   return img;
