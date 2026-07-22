@@ -57,7 +57,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .card-body img.loaded { border-color: #e0e0e0; }
 .card-body img.error { border-color: #f44336; }
 
-.thumb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; padding: 8px; }
+.thumb-grid { padding: 8px; } .thumb-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; } .thumb-row .thumb-item { flex: 0 0 auto; width: 150px; }
 .thumb-item { text-align: center; }
 .thumb-item img { width: 100%; max-width: 160px; border: 2px solid #e0e0e0; border-radius: 4px; }
 .thumb-item img.loaded { border-color: #e0e0e0; }
@@ -165,7 +165,7 @@ function buildThumb(){
     const h=document.createElement('div');h.className='card-header'; h.innerHTML=`<div><span class="pum">${product.pum}</span><span class="color">${product.color}</span><span class="name">${product.name}</span></div><span class="toggle">▼</span>`;
     const b=document.createElement('div');b.className='card-body';
     const thumbs=getThumbUrls(product); const grid=document.createElement('div');grid.className='thumb-grid';
-    Object.keys(thumbs).forEach(sz=>{ const item=document.createElement('div');item.className='thumb-item'; const sl=document.createElement('div');sl.className='thumb-size-label';sl.textContent=sz;item.appendChild(sl); item.appendChild(createImg(thumbs[sz])); const lb=document.createElement('div');lb.className='label';lb.textContent=thumbs[sz].split('/').pop();item.appendChild(lb); grid.appendChild(item); });
+    Object.keys(thumbs).forEach(sz=>{ const sl=document.createElement('div');sl.className='thumb-size-label';sl.textContent=sz;grid.appendChild(sl); const row=document.createElement('div');row.className='thumb-row'; const item=document.createElement('div');item.className='thumb-item'; item.appendChild(createImg(thumbs[sz])); const lb=document.createElement('div');lb.className='label';lb.textContent=thumbs[sz].split('/').pop();item.appendChild(lb); row.appendChild(item); grid.appendChild(row); });
     b.appendChild(grid);
     h.onclick=()=>{b.classList.toggle('hidden');h.classList.toggle('collapsed');};
     card.appendChild(h);card.appendChild(b);ct.appendChild(card);
