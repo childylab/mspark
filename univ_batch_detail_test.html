@@ -67,6 +67,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 </style>
 </head>
 <body>
+<div id="dim-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+  <div style="color:#fff;font-size:1.5rem;font-weight:700;">🧪 UNIV 26FA 검증</div>
+  <div style="color:#aaa;font-size:0.95rem;">검증 시작 버튼을 눌러 이미지 검증을 시작하세요</div>
+  <button id="startTestBtn" style="padding:14px 44px;background:#e94560;color:#fff;border:none;border-radius:8px;font-size:1.1rem;font-weight:700;cursor:pointer;">검증 시작</button>
+</div>
 <div id="sidebar">
   <div class="logo">UNIV 26FA <a href="index.html">← 메인</a></div>
   <div class="tabs">
@@ -199,7 +204,11 @@ function buildThumb(){
 document.querySelectorAll('#sidebar .tabs button').forEach(btn=>{
   btn.onclick=()=>{ document.querySelectorAll('#sidebar .tabs button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentTab=btn.dataset.tab; if(currentTab==='detail')buildDetail();else buildThumb(); };
 });
-buildNav(); buildDetail();
+buildNav();
+document.getElementById('startTestBtn').addEventListener('click', function() {
+  document.getElementById('dim-overlay').style.display = 'none';
+  buildDetail();
+});
 </script>
 </body>
 </html>
